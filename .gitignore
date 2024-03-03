@@ -1,0 +1,11 @@
+*.pyc
+*~
+__pycache__
+myvenv
+db.posgresql
+/static
+DS.Store
+README.md
+README.txt
+vetdb.sql
+migrations
