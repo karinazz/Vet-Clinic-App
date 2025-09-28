@@ -11,23 +11,45 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import environ
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ==============================================================================
+# INICJALIZACJA DJANGO-ENVIRON
+# Ten blok kodu odczytuje zmienne z pliku .env (lokalnie)
+# lub ze zmiennych środowiskowych (na serwerze Render)
+# ==============================================================================
+env = environ.Env(
+    # Ustawienie domyślnej wartości i typu dla DEBUG
+    DEBUG=(bool, False)
+)
+# Wskazanie ścieżki do pliku .env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+# ==============================================================================
+# USTAWIENIA BEZPIECZEŃSTWA I KONFIGURACJI
+# ==============================================================================
+
+# Klucz bezpieczeństwa odczytywany ze środowiska
+SECRET_KEY = env('SECRET_KEY')
+
+# Tryb DEBUG odczytywany ze środowiska (domyślnie False, jeśli go nie ma)
+DEBUG = env('DEBUG')
+
+# Konfiguracja dozwolonych hostów dla Render i lokalnie
+ALLOWED_HOSTS = ['127.0.0.1']
+
+RENDER_EXTERNAL_HOSTNAME = env.str('RENDER_EXTERNAL_HOSTNAME', default=None)
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['127.0.0.1', 'pythonanywhere.com']
-
-
-# Application definition
+# ==============================================================================
+# DEFINICJE APLIKACJI I MIDDLEWARE
+# ==============================================================================
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -42,8 +64,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Poprawne miejsce dla Whitenoise
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -72,59 +94,62 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
-# Database
+# ==============================================================================
+# BAZA DANYCH
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+# ==============================================================================
 
 DATABASES = {
+    # Odczytuje konfigurację bazy z jednej zmiennej DATABASE_URL
     'default': env.db(),
 }
 
 
-# Password validation
+# ==============================================================================
+# WALIDACJA HASEŁ
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
+# ==============================================================================
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 
-# Internationalization
+# ==============================================================================
+# INTERNACJONALIZACJA
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
+# ==============================================================================
 
 LANGUAGE_CODE = 'pl'
-
 TIME_ZONE = 'Europe/Warsaw'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# ==============================================================================
+# PLIKI STATYCZNE (CSS, JS) I MEDIA (UPLOADOWANE PLIKI)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
+# ==============================================================================
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] # Poprawiona nazwa zmiennej
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Konfiguracja dla Whitenoise w środowisku produkcyjnym
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ==============================================================================
+# USTAWIENIA DOMYŚLNE
+# ==============================================================================
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SECRET_KEY = 'fdhjfsdkfhsdjfshkfsk'
