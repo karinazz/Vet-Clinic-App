@@ -87,6 +87,30 @@ Before you begin, ensure you have the following software installed on your syste
 
 -----
 
+Jasne, oczywiście. Dodałem te informacje w nowej sekcji na końcu i lekko zmodyfikowałem istniejące kroki, aby wszystko było spójne.
+
+Oto ostateczna, kompletna wersja pliku `README.md` w języku angielskim. Wystarczy, że skopiujesz i wkleisz całość na swój GitHub.
+
+-----
+
+-----
+
+# Veterinary Clinic App - Setup Instructions
+
+A simple web application built with Django that simulates an appointment booking system for a veterinary clinic.
+
+-----
+
+## \#\# Prerequisites
+
+Before you begin, ensure you have the following software installed on your system:
+
+  * **Python** (version 3.10+ recommended)
+  * **Git**
+  * **PostgreSQL** (database server)
+
+-----
+
 ## \#\# Step-by-Step Installation
 
 This guide will walk you through the entire process of configuring and running the project.
@@ -225,6 +249,3 @@ The provided database (`vetdb.sql`) includes pre-loaded user accounts. You can u
 
   * **Username:** `ANowak`
   * **Password:** `Przychodnia%2`
-    ```
-
-You're all set\! 🎉 The application is now available in your browser at **`http://127.0.0.1:8000/`**. The admin panel is located at **`/admin`**.
